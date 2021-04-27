@@ -22,6 +22,13 @@ session_start();
 
         $course_name = "";
         $course_description = "";
+        
+
+        if (isset($_GET["action"]) and $_GET["action"] == "delete"){
+            $course_id = $_GET["course_id"];
+            delete_course($conn, $course_id);
+            header("Location: courses.php");
+        }
 
         if (isset($_POST["submit"])){
             $course_id = $_POST["course_id"];

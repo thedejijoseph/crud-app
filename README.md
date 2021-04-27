@@ -54,4 +54,4 @@ GOOD LUCK!!!
 
  <hr>
 
-oh wow.. need to add the delete course function, and maybe the top nav too
+About that nav...

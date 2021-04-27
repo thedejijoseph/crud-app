@@ -132,4 +132,14 @@ function update_course($conn, $data) {
     }
 }
 
+function delete_course($conn, $course_id) {
+    $delete_course_sql = "DELETE FROM `courses` WHERE `courses`.`course_id` = $course_id;";
+
+    if ($conn->query($delete_course_sql) === TRUE) {
+        error_log("Deleted course with course_id -".$course_id."-");
+    } else {
+        error_log("Could not delete course with course_id -".$course_id."- =>" . $conn->error);
+    }
+}
+
 ?>

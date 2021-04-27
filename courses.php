@@ -42,10 +42,11 @@ session_start();
         
         foreach ($user_courses as $course){
             $edit = '<a href="courses-edit.php?action=edit&course_id='.$course['course_id'].'">Edit</a>';
+            $delete = '<a href="courses-edit.php?action=delete&course_id='.$course['course_id'].'">Delete</a>';
             $course_name = $course['name'];
             $course_description = $course['description'];
 
-            $row = "<tr><td>$edit</td><td>$course_name</td><td>$course_description</td></tr>";
+            $row = "<tr><td>$edit - $delete</td><td>$course_name</td><td>$course_description</td></tr>";
             $table_rows = $table_rows . $row;
         }
         echo('
