@@ -18,25 +18,10 @@ session_start();
         
         if(!isset($_SESSION["logged_in"])){
             header("Location: login.php");
-            exit();
-        }
-
-        function read_db(){
-            if (file_exists("database.json")){
-                $data = file_get_contents("database.json");
-                $database = json_decode($data, true);
-                return $database;
-            } else {
-                $database = array();
-                return $database;
-            }
-
         }
 
         $logged_in_user = $_SESSION["logged_in"];
-        $database = read_db();
-        
-        $user = $database[$logged_in_user];
+        $user = select_user($conn, $logged_in_user);
 
         echo('
         <div class="small-container">
@@ -46,9 +31,10 @@ session_start();
                     <p>Welcome to your Superhuman Academy Dashboard</p>
                     <div class="flex-row">
                         <div class="flex-small">
-                            <b>Registered courses</b>
+                            <b>Your courses</b>
                             <hr/>
-                            <p>You do not have any course registered. Create one!</p>
+                            <p>Check out <a href="courses.php">all your courses</a>
+                            <p>Or <a href="courses-new.php">create a new one</a></p>
                         </div>
                         <div class="flex-small">
                             <b>Superhuman account</b>

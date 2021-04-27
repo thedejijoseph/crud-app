@@ -16,6 +16,10 @@ session_start();
     <?php
         include 'database.php';
 
+        if(!isset($_SESSION["logged_in"])){
+            header("Location: login.php");
+        }
+
         $error_message = "";
         $username = "";
         $password = "";
@@ -44,7 +48,6 @@ session_start();
             } else {
                 $error_message = "User does not exist";
             }
-            
         }
     ?>
 
