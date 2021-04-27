@@ -14,37 +14,7 @@ session_start();
 </head>
 <body>
     <?php
-
-         function write_to_db($database){
-            $database_file = "./database.json";
-
-            if (!file_exists($database_file)){
-                touch($database_file);
-            }
-
-            $open_file = fopen($database_file, "w");
-            $data_to_write = json_encode($database);
-            
-            fwrite($open_file, $data_to_write);
-            fclose($open_file);
-        }
-
-        function read_db(){
-            $database_file = "./database.json";
-
-            if (!file_exists($database_file)){
-                // file has not been created, use empty array
-                $database = array();
-                return $database;
-            } else {
-                $open_file = fopen($database_file, "r");
-                $data = fread($open_file, filesize($database_file));
-                $database = json_decode($data, true);
-
-                return $database;
-            }
-        }
-        
+        include 'database.php';
 
         $error_message = "";
         $username = "";
@@ -55,11 +25,10 @@ session_start();
             $username = $_POST["username"];
             $email = $_POST["email"];
             $password = $_POST["password"];
+            
+            $user = select_user($conn, $username);
 
-            $database = read_db();
-
-            // ! hold off on checking for duplicate usernames
-            if (isset($database[$username])){
+            if ($user){
                 $error_message = "An account with username '$username' has already been created";;
             } else {
                 $new_user = [
@@ -67,10 +36,9 @@ session_start();
                     "email" => $email,
                     "password" => $password
                 ];
-            
-                $database[$username] = $new_user;
+                
+                insert_user($conn, $new_user);
                 $_SESSION["logged_in"] = $username;
-                write_to_db($database);
                 header("Location: index.php");
             }
         }

@@ -14,36 +14,7 @@ session_start();
 </head>
 <body>
     <?php
-
-        function write_to_db($database){
-            $database_file = "./database.json";
-
-            if (!file_exists($database_file)){
-                touch($database_file);
-            }
-
-            $open_file = fopen($database_file, "w");
-            $data_to_write = json_encode($database);
-            
-            fwrite($open_file, $data_to_write);
-            fclose($open_file);
-        }
-
-        function read_db(){
-            $database_file = "./database.json";
-
-            if (!file_exists($database_file)){
-                // file has not been created, use empty array
-                $database = array();
-                return $database;
-            } else {
-                $open_file = fopen($database_file, "r");
-                $data = fread($open_file, filesize($database_file));
-                $database = json_decode($data, true);
-
-                return $database;
-            }
-        }
+        include 'database.php';
 
         $error_message = "";
         $username = "";
@@ -55,12 +26,15 @@ session_start();
             $password = $_POST["password"];
             $password_again = $_POST["password_again"];
 
-            $database = read_db();
+            $user = select_user($conn, $username);
 
-            if (isset($database[$username])){
+            if ($user){
                 if ($password == $password_again){
-                    $database[$username]["password"] = $password;
-                    write_to_db($database);
+                    $update_data = [
+                        "username" => $username,
+                        "password" => $password_again
+                    ];
+                    update_user_password($conn, $update_data);
                     
                     $_SESSION["logged_in"] = $username;
                     header("Location: index.php");

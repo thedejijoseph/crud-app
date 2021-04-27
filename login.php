@@ -14,21 +14,7 @@ session_start();
 </head>
 <body>
     <?php
-        function read_db(){
-            $database_file = "./database.json";
-
-            if (!file_exists($database_file)){
-                // file has not been created, use empty array
-                $database = array();
-                return $database;
-            } else {
-                $open_file = fopen($database_file, "r");
-                $data = fread($open_file, filesize($database_file));
-                $database = json_decode($data, true);
-
-                return $database;
-            }
-        }
+        include 'database.php';
 
         $error_message = "";
         $username = "";
@@ -38,12 +24,10 @@ session_start();
             $username = $_POST["username"];
             $password = $_POST["password"];
 
-            $database = read_db();
+            $user = select_user($conn, $username);
 
-            if (isset($database[$username])){
-                $user = $database[$username];
-
-                if ($user['password'] == $password){
+            if ($user){
+                if ($user['password'] == md5($password)){
                     $_SESSION["logged_in"] = $username;
                     header("Location: index.php");
                 } else {

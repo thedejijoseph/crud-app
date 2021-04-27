@@ -14,6 +14,8 @@ session_start();
 </head>
 <body>
     <?php
+        include 'database.php';
+        
         if(!isset($_SESSION["logged_in"])){
             header("Location: login.php");
             exit();
