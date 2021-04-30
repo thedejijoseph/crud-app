@@ -53,7 +53,7 @@ session_start();
 
                     <form action="courses-new.php" method="post">
                         <label for="course_name">Course name</label>
-                        <input type="text" name="course_name" id="course_name" placeholder="Basic time travel" value="">
+                        <input type="text" name="course_name" id="course_name" placeholder="Basic time travel" value="" autocomplete="off">
 
                         <label for="course_description">Course description</label>
                         <textarea name="course_description" id="course_description" placeholder="Understanding the rudiments and practicalities of time travel"></textarea>
