@@ -57,8 +57,12 @@ function insert_user($conn, $data){
 }
 
 function select_user($conn, $username){
-    $select_user_sql = "SELECT * FROM `users` WHERE `username` = \"$username\"";
-    $result = $conn->query($select_user_sql);
+    $select_user_stmt = $conn->prepare("SELECT * FROM `users` WHERE `username` = ?");
+
+    $select_user_stmt->bind_param("s", $username);
+    $select_user_stmt->execute();
+
+    $result = $select_user_stmt->get_result();
 
     if ($result->num_rows > 0){
         $user = array();
@@ -67,7 +71,7 @@ function select_user($conn, $username){
         $user = $row;
         return $user;
     } else {
-        error_log("Could not fetch user -$username- => " . $conn->error);
+        error_log("Could not fetch user: $username [$select_user_stmt->error]");
         $user = NULL;
         return $user;
     }
@@ -108,13 +112,14 @@ function insert_course($conn, $data){
 }
 
 function select_courses_by_user($conn, $user_id) {
-    // $select_courses_by_user_stmt = $conn->prepare("SELECT * FROM `courses` WHERE `user_id` = ?;");
-    // $select_courses_by_user_stmt->bind_param("i", $user_id);
-    $select_courses_by_user_sql = "SELECT * FROM `courses` WHERE `user_id` = $user_id;";
+    $select_courses_by_user_stmt = $conn->prepare("SELECT * FROM `courses` WHERE `user_id` = ?");
+
+    $select_courses_by_user_stmt->bind_param("i", $user_id);
+    $select_courses_by_user_stmt->execute();
     
-    $result = $conn->query($select_courses_by_user_sql);
-    // $result = $select_courses_by_user_stmt->execute();
-    if ($result->num_rows > 0) {
+    $result = $select_courses_by_user_stmt->get_result();
+
+    if($result) {
         $courses = array();
 
         while ($row = $result->fetch_assoc()){
@@ -122,31 +127,35 @@ function select_courses_by_user($conn, $user_id) {
         }
         return $courses;
     } else {
-        error_log("Could not fetch courses with user_id -$user_id- => " . $conn->error);
+        error_log("Could not fetch courses with user_id: $user_id [$select_courses_by_user_stmt->error]");
         $courses = NULL;
         return $courses;
     }
 }
 
 function select_course_by_id($conn, $course_id){
-    $select_course_by_id_sql = "SELECT * FROM `courses` WHERE `course_id` = $course_id";
+    $select_course_by_id_stmt = $conn->prepare("SELECT * FROM `courses` WHERE `course_id` = ?");
 
-    $result = $conn->query($select_course_by_id_sql);
-    if ($result->num_rows > 0) {
+    $select_course_by_id_stmt->bind_param("i", $course_id);
+    $select_course_by_id_stmt->execute();
+
+    $result = $select_course_by_id_stmt->get_result();
+
+    if ($result) {
         $course = array();
 
         $row = $result->fetch_assoc();
         $course = $row;
         return $course;
     } else {
-        error_log("Could not fetch course with course_id -$course_id-" . $conn->error);
+        error_log("Could not fetch course with course_id: $course_id [$select_course_by_id_stmt->error]");
         $course = NULL;
         return $course;
     }
 }
 
 function update_course($conn, $data){
-    $update_course_stmt = $conn->prepare("UPDATE `courses` SET `name` = ?, `description` = ?, WHERE `courses`.`course_id` = ?;");
+    $update_course_stmt = $conn->prepare("UPDATE `courses` SET `name` = ?, `description` = ? WHERE `courses`.`course_id` = ?");
 
     $name = $data['course_name'];
     $description = $data['course_description'];
