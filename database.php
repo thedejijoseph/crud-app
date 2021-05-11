@@ -5,34 +5,33 @@ $db_user = getenv('DB_USER');
 $db_password = getenv('DB_PASSWORD');
 $db_name = getenv('DB_NAME');
 
+
 // get a connection to the database
+// create a connection without db, create db, and get connection again
+$conn = new mysqli($server_name, $db_user, $db_password);
+$create_db_sql = "CREATE DATABASE IF NOT EXISTS `$db_name`";
+$conn->query($create_db_sql);
+$conn->close();
+
+// retyring
 $conn = new mysqli($server_name, $db_user, $db_password, $db_name);
 if ($conn->connect_error){
+    // if it still fails, kill the script
     die("Connection failed: " . $conn->connect_error);
 }
 
-// move on to creating a database
-$sql = "CREATE DATABASE IF NOT EXISTS `$db_name`";
-if ($conn->query($sql) === TRUE) {
-    error_log("Database $db_name created successfully");
+// database exists or has just been created
+    
+// create users table
+$create_users_table_sql = "CREATE TABLE IF NOT EXISTS `users` ( `user_id` INT NOT NULL AUTO_INCREMENT , `username` VARCHAR(255) NOT NULL , `email` VARCHAR(255) NOT NULL , `password` VARCHAR(255) NOT NULL , PRIMARY KEY (`user_id`)) ENGINE = InnoDB;";
+if (!$conn->query($create_users_table_sql) === TRUE) {
+    error_log("Could not create -users- table [$conn->error]");
+}
 
-    // create users table
-    $create_users_table_sql = "CREATE TABLE IF NOT EXISTS `users` ( `user_id` INT NOT NULL AUTO_INCREMENT , `username` VARCHAR(255) NOT NULL , `email` VARCHAR(255) NOT NULL , `password` VARCHAR(255) NOT NULL , PRIMARY KEY (`user_id`)) ENGINE = InnoDB;";
-    if ($conn->query($create_users_table_sql) === TRUE) {
-        error_log("Created -users- table successfully");
-    } else {
-        error_log("Could not create -users- table [$conn->error]");
-    }
-
-    // create courses table
-    $create_courses_table_sql = "CREATE TABLE IF NOT EXISTS .`courses` ( `course_id` INT NOT NULL AUTO_INCREMENT , `name` VARCHAR(255) NOT NULL , `description` VARCHAR(2000) NOT NULL , `user_id` INT(255) NOT NULL , PRIMARY KEY (`course_id`)) ENGINE = InnoDB;";
-    if ($conn->query($create_courses_table_sql) === TRUE) {
-        error_log("Created -courses- table successfully");
-    } else {
-        error_log("Could not create -courses- table [$conn->error]");
-    }
-} else {
-    error_log("Error creating a database [$conn->error]");
+// create courses table
+$create_courses_table_sql = "CREATE TABLE IF NOT EXISTS `courses` ( `course_id` INT NOT NULL AUTO_INCREMENT , `name` VARCHAR(255) NOT NULL , `description` VARCHAR(2000) NOT NULL , `user_id` INT(255) NOT NULL , PRIMARY KEY (`course_id`)) ENGINE = InnoDB;";
+if (!$conn->query($create_courses_table_sql) === TRUE) {
+    error_log("Could not create -courses- table [$conn->error]");
 }
 
 
