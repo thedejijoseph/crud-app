@@ -1,9 +1,14 @@
 <?php
 
-$server_name = "localhost";
-$db_user = "manager";
-$db_password = "manager";
-$db_name = "crud_app";
+include 'dotenv.php';
+use DevCoder\DotEnv;
+(new DotEnv(__DIR__ . '/.env'))->load();
+
+
+$server_name = getenv('SERVER_NAME');
+$db_user = getenv('DB_USER');
+$db_password = getenv('DB_PASSWORD');
+$db_name = getenv('DB_NAME');
 
 // get a connection to the database
 $conn = new mysqli($server_name, $db_user, $db_password, $db_name);
