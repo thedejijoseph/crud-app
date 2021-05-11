@@ -1,10 +1,5 @@
 <?php
 
-include 'dotenv.php';
-use DevCoder\DotEnv;
-(new DotEnv(__DIR__ . '/.env'))->load();
-
-
 $server_name = getenv('SERVER_NAME');
 $db_user = getenv('DB_USER');
 $db_password = getenv('DB_PASSWORD');
