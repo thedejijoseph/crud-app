@@ -12,12 +12,12 @@ if ($conn->connect_error){
 }
 
 // move on to creating a database
-$sql = "CREATE DATABASE IF NOT EXISTS `crud_app`";
+$sql = "CREATE DATABASE IF NOT EXISTS `$db_name`";
 if ($conn->query($sql) === TRUE) {
-    error_log("Database crud_app created successfully");
+    error_log("Database $db_name created successfully");
 
     // create users table
-    $create_users_table_sql = "CREATE TABLE IF NOT EXISTS `crud_app`.`users` ( `user_id` INT NOT NULL AUTO_INCREMENT , `username` VARCHAR(255) NOT NULL , `email` VARCHAR(255) NOT NULL , `password` VARCHAR(255) NOT NULL , PRIMARY KEY (`user_id`)) ENGINE = InnoDB;";
+    $create_users_table_sql = "CREATE TABLE IF NOT EXISTS `users` ( `user_id` INT NOT NULL AUTO_INCREMENT , `username` VARCHAR(255) NOT NULL , `email` VARCHAR(255) NOT NULL , `password` VARCHAR(255) NOT NULL , PRIMARY KEY (`user_id`)) ENGINE = InnoDB;";
     if ($conn->query($create_users_table_sql) === TRUE) {
         error_log("Created -users- table successfully");
     } else {
@@ -25,7 +25,7 @@ if ($conn->query($sql) === TRUE) {
     }
 
     // create courses table
-    $create_courses_table_sql = "CREATE TABLE IF NOT EXISTS `crud_app`.`courses` ( `course_id` INT NOT NULL AUTO_INCREMENT , `name` VARCHAR(255) NOT NULL , `description` VARCHAR(2000) NOT NULL , `user_id` INT(255) NOT NULL , PRIMARY KEY (`course_id`)) ENGINE = InnoDB;";
+    $create_courses_table_sql = "CREATE TABLE IF NOT EXISTS .`courses` ( `course_id` INT NOT NULL AUTO_INCREMENT , `name` VARCHAR(255) NOT NULL , `description` VARCHAR(2000) NOT NULL , `user_id` INT(255) NOT NULL , PRIMARY KEY (`course_id`)) ENGINE = InnoDB;";
     if ($conn->query($create_courses_table_sql) === TRUE) {
         error_log("Created -courses- table successfully");
     } else {
@@ -40,11 +40,11 @@ if ($conn->query($sql) === TRUE) {
 // database 'apis'
 
 function insert_user($conn, $data){
-    $insert_user_stmt = $conn->prepare("INSERT INTO `crud_app`.`users` (user_id, username, email, password) VALUES (NULL, ?, ?, ?);");
+    $insert_user_stmt = $conn->prepare("INSERT INTO `users` (user_id, username, email, password) VALUES (NULL, ?, ?, ?);");
 
     $username = $data['username'];
     $email = $data['email'];
-    $password = $data['password'];
+    $password = md5($data['password']);
 
     $insert_user_stmt->bind_param("sss", $username, $email, $password);
     $insert_user_stmt->execute();
@@ -95,7 +95,7 @@ function update_user_password($conn, $data){
 
 
 function insert_course($conn, $data){
-    $insert_course_stmt = $conn->prepare("INSERT INTO `crud_app`.`courses` (`course_id`, `name`, `description`, `user_id`) VALUES (NULL, ?, ?, ?)");
+    $insert_course_stmt = $conn->prepare("INSERT INTO `courses` (`course_id`, `name`, `description`, `user_id`) VALUES (NULL, ?, ?, ?)");
     
     $course_name = $data['course_name'];
     $course_description = $data['course_description'];
